@@ -137,7 +137,7 @@ Strategy.prototype.authenticate = function (req, options) {
     var self = this;
     var verified = function (err, user, info) {
         if (err) {
-            return self.error(err);
+            return self.fail(info);
         }
         if (!user) {
             return self.fail(info);
