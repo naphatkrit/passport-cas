@@ -121,6 +121,12 @@ Strategy.prototype.authenticate = function (req, options) {
     var service = this.service(req);
 
     var ticket = req.param('ticket');
+    console.log("session object:");
+    console.log(req.session);
+    if (!ticket && req.session) {
+        ticket = req.session.casTicket;
+    }
+
     if (!ticket) {
         var redirectURL = url.parse(this.ssoBase + '/login', true);
 
@@ -136,11 +142,20 @@ Strategy.prototype.authenticate = function (req, options) {
 
     var self = this;
     var verified = function (err, user, info) {
-        if (err) {
-            return self.fail(info);
-        }
-        if (!user) {
-            return self.fail(info);
+        if (req.session) {
+            if (err || !user) {
+                req.session.casTicket = false;
+                return req.session.save(function(error) {
+                    return self.fail(info);
+                })
+            }
+        } else {
+            if (err) {
+                return self.fail(info);
+            }
+            if (!user) {
+                return self.fail(info);
+            }
         }
         self.success(user, info);
     };
@@ -162,7 +177,15 @@ Strategy.prototype.authenticate = function (req, options) {
             return body += chunk;
         });
         return response.on('end', function () {
-            return self._validate(req, body, verified);
+            if (req.session) {
+                req.session.casTicket = ticket;
+                return req.session.save(function(error) {
+                    return self._validate(req, body, verified);
+                })
+            }
+            else {
+                return self._validate(req, body, verified);
+            }
         });
     });
 
