@@ -18,7 +18,6 @@ function Strategy(options, verify) {
     }
     this.version = options.version || "CAS1.0"
     this.ssoBase = options.ssoBaseURL;
-    this.serverBaseURL = options.serverBaseURL;
     this.validateURL = options.validateURL;
     this.serviceURL = options.serviceURL;
     this.parsed = url.parse(this.ssoBase);
@@ -94,9 +93,7 @@ function Strategy(options, verify) {
 }
 
 Strategy.prototype.service = function(req) {
-    var serviceURL = this.serviceURL || req.originalUrl;
-    var resolvedURL = url.resolve(this.serverBaseURL, serviceURL);
-    var parsedURL = url.parse(resolvedURL, true);
+    var parsedURL = url.parse(req.url, true);
     delete parsedURL.query.ticket;
     delete parsedURL.search;
     return url.format(parsedURL);
