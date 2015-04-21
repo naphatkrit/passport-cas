@@ -96,7 +96,13 @@ Strategy.prototype.service = function(req) {
     var parsedURL = url.parse(req.url, true);
     delete parsedURL.query.ticket;
     delete parsedURL.search;
-    return url.format(parsedURL);
+    var service = url.format({
+        protocol: req.protocol || 'http',
+        host: req.headers['host'],
+        pathname: parsedURL.pathname,
+        query: parsedURL.query
+    })
+    return url.format(service);
 };
 
 Strategy.prototype.authenticate = function (req, options) {
