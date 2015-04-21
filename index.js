@@ -121,8 +121,6 @@ Strategy.prototype.authenticate = function (req, options) {
     var service = this.service(req);
 
     var ticket = req.param('ticket');
-    console.log("session object:");
-    console.log(req.session);
     if (!ticket && req.session) {
         ticket = req.session.casTicket;
     }
