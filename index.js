@@ -94,12 +94,15 @@ function Strategy(options, verify) {
 
 Strategy.prototype.service = function(req) {
     var parsedURL = url.parse(req.url, true);
+    console.log("req url");
+    console.log(req.url);
     delete parsedURL.query.ticket;
     delete parsedURL.search;
+    // TODO this assumes that login path = /login
     var service = url.format({
         protocol: req.protocol || 'http',
         host: req.headers['host'],
-        pathname: parsedURL.pathname,
+        pathname: "login",
         query: parsedURL.query
     })
     return url.format(service);
